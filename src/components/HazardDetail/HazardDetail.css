@@ -1,0 +1,149 @@
+/* Backdrop */
+.hazard-detail__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 850;
+  background: rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Panel */
+.hazard-detail {
+  position: fixed;
+  top: var(--header-height);
+  right: 0;
+  bottom: 0;
+  z-index: 860;
+  width: 400px;
+  max-width: 100vw;
+  background: var(--color-surface);
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+/* Header */
+.hazard-detail__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-lg) var(--space-xl);
+  color: white;
+}
+
+.hazard-detail__header-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.hazard-detail__header h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.hazard-detail__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.hazard-detail__close:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* Body */
+.hazard-detail__body {
+  padding: var(--space-xl);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.hazard-detail__section h3 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-sm);
+}
+
+.hazard-detail__section p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.hazard-detail__coords {
+  font-family: "SF Mono", "Fira Code", monospace;
+  font-size: 0.85rem !important;
+  color: var(--color-text-muted) !important;
+}
+
+.hazard-detail__map-preview {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  margin-top: var(--space-sm);
+  border: 1px solid #e5e7eb;
+}
+
+/* Meta */
+.hazard-detail__meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding-top: var(--space-md);
+  border-top: 1px solid #e5e7eb;
+}
+
+.hazard-detail__meta-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .hazard-detail {
+    width: 100%;
+    top: auto;
+    bottom: 0;
+    max-height: 80vh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+}

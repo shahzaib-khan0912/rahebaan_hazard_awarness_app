@@ -1,20 +1,6 @@
-/* ========================================
-   Global Styles — Pakistan Road Hazard Reporter
-   ======================================== */
-
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
-
-*,
-*::before,
-*::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 :root {
   /* Brand Colors */
-  --color-primary: #01411c;       /* Pakistan green */
+  --color-primary: #01411c;
   --color-primary-light: #04724d;
   --color-accent: #f5f5f5;
   --color-danger: #e63946;
@@ -23,6 +9,14 @@
   --color-bg: #f0f2f5;
   --color-text: #1a1a2e;
   --color-text-muted: #6b7280;
+
+  /* Hazard type colors */
+  --hazard-pothole: #e63946;
+  --hazard-signal: #f4a261;
+  --hazard-water: #457b9d;
+  --hazard-crack: #e9c46a;
+  --hazard-manhole: #6a0572;
+  --hazard-other: #6b7280;
 
   /* Typography */
   --font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -44,6 +38,19 @@
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+
+  /* Layout */
+  --header-height: 60px;
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 html {

@@ -1,0 +1,118 @@
+/* ========================================
+   VoiceInput Component Styles
+   ======================================== */
+
+.voice-input {
+  margin-top: var(--space-sm);
+}
+
+.voice-input--unsupported {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: #fef3cd;
+  color: #856404;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+}
+
+.voice-input__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+/* Mic button */
+.voice-input__mic-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: visible;
+}
+
+.voice-input__mic-btn:hover {
+  background: var(--color-primary-light);
+  transform: scale(1.05);
+}
+
+.voice-input__mic-btn--active {
+  background: var(--color-danger);
+}
+
+.voice-input__mic-btn--active:hover {
+  background: #c1121f;
+}
+
+/* Pulsing ring animation when recording */
+.voice-input__pulse {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 3px solid var(--color-danger);
+  animation: pulse-ring 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+/* Language toggle button */
+.voice-input__lang-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid #d1d5db;
+  border-radius: var(--radius-sm);
+  background: white;
+  color: var(--color-text);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.voice-input__lang-btn:hover {
+  border-color: var(--color-primary);
+  background: #f0fdf4;
+}
+
+/* Status text */
+.voice-input__status {
+  margin-top: var(--space-sm);
+  font-size: 0.85rem;
+  color: var(--color-danger);
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.voice-input__transcript {
+  margin-top: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: #f0fdf4;
+  border-left: 3px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
