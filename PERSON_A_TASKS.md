@@ -194,22 +194,22 @@ Layout CSS: flexbox with sidebar on left, map filling remaining space.
 
 ## ✅ Day 1 Checklist
 
-- [ ] Update `index.css` — Leaflet CSS + hazard colors
-- [ ] Build `Header` — green gradient, title, report button
-- [ ] Build `MapView` — Leaflet map, colored markers, click handlers
-- [ ] Build `Sidebar` — recent reports list, time ago
-- [ ] Set up `App.jsx` — all state, dummy data, layout
-- [ ] `App.css` — flexbox layout
+- [x] Update `index.css` — Leaflet CSS + hazard colors
+- [x] Build `Header` — green gradient, title, report button
+- [x] Build `MapView` — Leaflet map, colored markers, click handlers
+- [x] Build `Sidebar` — recent reports list, time ago
+- [x] Set up `App.jsx` — all state, dummy data, layout
+- [x] `App.css` — flexbox layout
 
 ## ✅ Day 2 Checklist
 
-- [ ] Build `HazardDetail` — slide-in panel
-- [ ] Build `FilterBar` — colored chips
-- [ ] Add responsive CSS
-- [ ] Add micro-animations
-- [ ] Test all UI with dummy data
-- [ ] **MERGE** with Person B → uncomment `<HazardForm>`, replace dummy data with Supabase hook
-- [ ] Integration test
+- [x] Build `HazardDetail` — slide-in panel with severity badge, staggered animations, rotating close
+- [x] Build `FilterBar` — colored chips with fade-in animation, scale hover, color-tinted shadows
+- [x] Add responsive CSS — all components adapt at 768px breakpoint
+- [x] Add micro-animations — marker bounce, sidebar slide, detail slide, filter fade, header scroll shadow
+- [x] Test all UI with dummy data — 8 dummy hazards, all components wired and rendering
+- [x] **MERGE** with Person B → uncomment `<HazardForm>`, replace dummy data with Supabase hook
+- [x] Integration test
 
 ---
 

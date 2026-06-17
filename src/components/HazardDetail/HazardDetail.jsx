@@ -1,4 +1,4 @@
-import { X, Clock, MapPin, AlertTriangle } from "lucide-react";
+import { X, Clock, MapPin, AlertTriangle, TrafficCone, Droplets, Activity, CircleDot, HelpCircle } from "lucide-react";
 import "./HazardDetail.css";
 
 const HAZARD_COLORS = {
@@ -8,6 +8,15 @@ const HAZARD_COLORS = {
   "Road Crack": "#e9c46a",
   "Missing Manhole": "#6a0572",
   "Other": "#6b7280",
+};
+
+const HAZARD_ICONS = {
+  "Pothole": AlertTriangle,
+  "Broken Signal": TrafficCone,
+  "Waterlogging": Droplets,
+  "Road Crack": Activity,
+  "Missing Manhole": CircleDot,
+  "Other": HelpCircle,
 };
 
 const SEVERITY_COLORS = {
@@ -32,6 +41,7 @@ export default function HazardDetail({ hazard, onClose }) {
   if (!hazard) return null;
 
   const color = HAZARD_COLORS[hazard.hazard_type] || HAZARD_COLORS["Other"];
+  const HazardIcon = HAZARD_ICONS[hazard.hazard_type] || HAZARD_ICONS["Other"];
 
   return (
     <>
@@ -40,8 +50,15 @@ export default function HazardDetail({ hazard, onClose }) {
         {/* Header */}
         <div className="hazard-detail__header" style={{ background: color }}>
           <div className="hazard-detail__header-content">
-            <AlertTriangle size={22} />
-            <h2>{hazard.hazard_type}</h2>
+            <HazardIcon size={24} className="hazard-detail__icon" />
+            <div className="hazard-detail__title-wrapper">
+              <h2>{hazard.hazard_type}</h2>
+              <span className="hazard-detail__severity-badge" style={{
+                backgroundColor: SEVERITY_COLORS[hazard.severity] || SEVERITY_COLORS["Medium"]
+              }}>
+                {hazard.severity || "Medium"} Severity
+              </span>
+            </div>
           </div>
           <button className="hazard-detail__close" onClick={onClose}>
             <X size={18} />

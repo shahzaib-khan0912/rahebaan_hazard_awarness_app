@@ -33,12 +33,16 @@ export default function Sidebar({ hazards, onHazardClick, filterType }) {
     ? hazards.filter((h) => h.hazard_type === filterType)
     : hazards;
 
-  const displayHazards = filtered.slice(0, 25);
+  const sorted = [...filtered].sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+
+  const displayHazards = sorted.slice(0, 20);
 
   return (
     <>
       <button
-        className="sidebar__toggle"
+        className={`sidebar__toggle ${collapsed ? "sidebar__toggle--collapsed" : ""}`}
         onClick={() => setCollapsed(!collapsed)}
         title={collapsed ? "Show sidebar" : "Hide sidebar"}
       >
