@@ -22,6 +22,11 @@ export async function fetchHazards() {
  * @param {number} hazard.latitude - Latitude coordinate
  * @param {number} hazard.longitude - Longitude coordinate
  * @param {string} [hazard.reported_by="anonymous"] - Reporter name
+ * @param {string} [hazard.photo_url] - URL of uploaded photo
+ * @param {number} [hazard.verification_score] - AI verification score (0-100)
+ * @param {string} [hazard.verification_status] - Verification status
+ * @param {boolean} [hazard.is_ai_generated] - Whether photo is AI-generated
+ * @param {Object} [hazard.ai_analysis] - Full AI analysis JSON
  * @returns {Promise<Object>} The inserted hazard row
  */
 export async function insertHazard({
@@ -30,21 +35,68 @@ export async function insertHazard({
   latitude,
   longitude,
   reported_by = "anonymous",
+  ...optionalFields
 }) {
+  const row = {
+    hazard_type,
+    description,
+    latitude,
+    longitude,
+    reported_by,
+  };
+
+  // Only include optional fields (photo, verification) if they are present
+  // This prevents errors when DB migration hasn't been run yet
+  for (const [key, value] of Object.entries(optionalFields)) {
+    if (value !== undefined && value !== null) {
+      row[key] = value;
+    }
+  }
+
   const { data, error } = await supabase
     .from("hazards")
-    .insert([
-      {
-        hazard_type,
-        description,
-        latitude,
-        longitude,
-        reported_by,
-      },
-    ])
+    .insert([row])
     .select()
     .single();
 
   if (error) throw new Error(`Failed to insert hazard: ${error.message}`);
   return data;
+}
+
+/**
+ * Update an existing hazard report in Supabase.
+ * @param {string} id - The ID of the hazard to update
+ * @param {Object} updates - The fields to update
+ * @returns {Promise<Object>} The updated hazard row
+ */
+export async function updateHazard(id, updates) {
+  const { data, error } = await supabase
+    .from("hazards")
+    .update(updates)
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) throw new Error(`Failed to update hazard: ${error.message}`);
+  return data;
+}
+
+/**
+ * Delete a hazard report from Supabase.
+ * @param {string} id - The ID of the hazard to delete
+ * @returns {Promise<void>}
+ */
+export async function deleteHazard(id) {
+  const { data, error } = await supabase
+    .from("hazards")
+    .delete()
+    .eq("id", id)
+    .select();
+
+  if (error) throw new Error(`Failed to delete hazard: ${error.message}`);
+  
+  // If RLS blocked the delete, data will be empty or null
+  if (!data || data.length === 0) {
+    throw new Error("Deletion was blocked by database Row-Level Security (RLS) policies. Please run the SQL migration (002_add_photo_verification.sql) in your Supabase SQL Editor to enable delete access.");
+  }
 }

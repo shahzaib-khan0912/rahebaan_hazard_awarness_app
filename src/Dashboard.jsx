@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { deleteHazard } from "./services/hazardService";
 import Header from "./components/Header/Header";
 import MapView from "./components/MapView/MapView";
 import Sidebar from "./components/Sidebar/Sidebar";
@@ -23,13 +24,14 @@ export default function Dashboard() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [filterType, setFilterType] = useState("All");
   const [mapClickLocation, setMapClickLocation] = useState(null);
+  const [editingHazard, setEditingHazard] = useState(null);
   const [flyTo, setFlyTo] = useState(null);
   const navigate = useNavigate();
 
   const { hazards: supabaseHazards, loading, error, refetch } = useHazards();
-  const [localHazards, setLocalHazards] = useState([]);
+  const [localHazards, setLocalHazards] = useState(DUMMY_HAZARDS);
 
-  const hazards = supabaseHazards.length > 0 ? supabaseHazards : (loading ? [] : [...localHazards, ...DUMMY_HAZARDS]);
+  const hazards = supabaseHazards.length > 0 ? supabaseHazards : (loading ? [] : localHazards);
 
   useEffect(() => {
     if (error) {
@@ -39,6 +41,7 @@ export default function Dashboard() {
 
   const handleMapClick = useCallback((location) => {
     setMapClickLocation(location);
+    setEditingHazard(null);
     setIsFormOpen(true);
   }, []);
 
@@ -51,17 +54,51 @@ export default function Dashboard() {
     setFlyTo({ lat: hazard.latitude, lng: hazard.longitude });
   }, []);
 
-  const handleSubmitSuccess = useCallback((newHazard) => {
-    setLocalHazards(prev => [newHazard, ...prev]);
+  const handleSubmitSuccess = useCallback((savedHazard) => {
+    setLocalHazards(prev => {
+      const index = prev.findIndex(h => h.id === savedHazard.id);
+      if (index >= 0) {
+        const newLocal = [...prev];
+        newLocal[index] = savedHazard;
+        return newLocal;
+      }
+      return [savedHazard, ...prev];
+    });
+    // Update currently selected hazard if it was edited
+    if (selectedHazard?.id === savedHazard.id) {
+      setSelectedHazard(savedHazard);
+    }
     setIsFormOpen(false);
     setMapClickLocation(null);
+    setEditingHazard(null);
     refetch?.();
-  }, [refetch]);
+  }, [refetch, selectedHazard]);
 
   const handleFormClose = useCallback(() => {
     setIsFormOpen(false);
     setMapClickLocation(null);
+    setEditingHazard(null);
   }, []);
+
+  const handleEditHazard = useCallback((hazard) => {
+    setEditingHazard(hazard);
+    setMapClickLocation(null);
+    setIsFormOpen(true);
+  }, []);
+
+  const handleDeleteHazard = useCallback(async (hazard) => {
+    try {
+      if (String(hazard.id).length >= 36) {
+        await deleteHazard(hazard.id);
+      }
+      setLocalHazards(prev => prev.filter(h => h.id !== hazard.id));
+      setSelectedHazard(null);
+      refetch?.();
+    } catch (err) {
+      console.error("Failed to delete hazard", err);
+      alert("Failed to delete hazard: " + err.message);
+    }
+  }, [refetch]);
 
   return (
     <div className="flex flex-col h-screen bg-dark-bg overflow-hidden relative">
@@ -100,6 +137,8 @@ export default function Dashboard() {
       <HazardDetail
         hazard={selectedHazard}
         onClose={() => setSelectedHazard(null)}
+        onEdit={handleEditHazard}
+        onDelete={handleDeleteHazard}
       />
 
       <HazardForm
@@ -107,6 +146,7 @@ export default function Dashboard() {
         onClose={handleFormClose}
         location={mapClickLocation}
         onSubmitSuccess={handleSubmitSuccess}
+        initialData={editingHazard}
       />
 
       {loading && (

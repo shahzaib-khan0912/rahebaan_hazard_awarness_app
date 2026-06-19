@@ -26,7 +26,15 @@ if (supabaseUrl && supabaseAnonKey) {
     from: () => ({
       select: () => ({ order: () => ({ data: null, error: { message: "Supabase not configured" } }) }),
       insert: () => ({ select: () => ({ single: () => ({ data: null, error: { message: "Supabase not configured" } }) }) }),
+      update: () => ({ eq: () => ({ select: () => ({ single: () => ({ data: null, error: { message: "Supabase not configured" } }) }) }) }),
+      delete: () => ({ eq: () => ({ data: null, error: { message: "Supabase not configured" } }) }),
     }),
+    storage: {
+      from: () => ({
+        upload: () => Promise.resolve({ data: null, error: { message: "Supabase Storage not configured" } }),
+        getPublicUrl: () => ({ data: { publicUrl: "" } }),
+      }),
+    },
   };
 }
 

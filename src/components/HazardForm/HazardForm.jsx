@@ -1,8 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { X, MapPin, Send, Loader2, Sparkles, AlertCircle } from "lucide-react";
-import { insertHazard } from "../../services/hazardService";
+import { insertHazard, updateHazard } from "../../services/hazardService";
+import { uploadHazardPhoto } from "../../services/photoService";
 import { useAIClassifier } from "../../hooks/useAIClassifier";
+import { usePhotoVerification } from "../../hooks/usePhotoVerification";
 import VoiceInput from "../VoiceInput/VoiceInput";
+import PhotoUpload from "../PhotoUpload/PhotoUpload";
 import "./HazardForm.css";
 
 const HAZARD_TYPES = [
@@ -16,34 +19,51 @@ const HAZARD_TYPES = [
 
 /**
  * Modal form for reporting a road hazard.
- * Integrates voice input and AI auto-classification.
+ * Integrates voice input, AI auto-classification, photo upload, and AI verification.
  *
  * @param {Object} props
  * @param {boolean} props.isOpen - Whether the modal is visible
  * @param {() => void} props.onClose - Close callback
  * @param {{ lat: number, lng: number } | null} props.location - Map click location
- * @param {(newHazard: Object) => void} props.onSubmitSuccess - Called after successful insert
+ * @param {(newHazard: Object) => void} props.onSubmitSuccess - Called after successful insert/update
+ * @param {Object} [props.initialData] - Existing hazard data if editing
  */
-export default function HazardForm({ isOpen, onClose, location, onSubmitSuccess }) {
+export default function HazardForm({ isOpen, onClose, location, onSubmitSuccess, initialData }) {
   const [hazardType, setHazardType] = useState("");
   const [description, setDescription] = useState("");
   const [reportedBy, setReportedBy] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [aiSuggestion, setAiSuggestion] = useState(null);
+  const [photo, setPhoto] = useState(null);
 
   const { classify, classifying, aiError } = useAIClassifier();
+  const {
+    verify,
+    verifying,
+    verificationResult,
+    verificationError,
+    resetVerification,
+  } = usePhotoVerification();
 
   // Reset form when opened/closed
   useEffect(() => {
     if (isOpen) {
-      setHazardType("");
-      setDescription("");
-      setReportedBy("");
+      if (initialData) {
+        setHazardType(initialData.hazard_type || "");
+        setDescription(initialData.description || "");
+        setReportedBy(initialData.reported_by === "anonymous" ? "" : (initialData.reported_by || ""));
+      } else {
+        setHazardType("");
+        setDescription("");
+        setReportedBy("");
+      }
       setError(null);
       setAiSuggestion(null);
+      setPhoto(null);
+      resetVerification();
     }
-  }, [isOpen]);
+  }, [isOpen, initialData, resetVerification]);
 
   // Auto-classify when description changes (debounced)
   useEffect(() => {
@@ -65,6 +85,27 @@ export default function HazardForm({ isOpen, onClose, location, onSubmitSuccess 
 
     return () => clearTimeout(timer);
   }, [description, classify, hazardType]);
+
+  // Run AI photo verification when a photo is selected
+  const handlePhotoChange = useCallback(
+    (file) => {
+      setPhoto(file);
+      if (file) {
+        // Trigger AI verification with the current hazard type
+        verify(file, hazardType || "Unknown");
+      } else {
+        resetVerification();
+      }
+    },
+    [verify, resetVerification, hazardType]
+  );
+
+  const handleApplyVerifiedType = useCallback(
+    (type) => {
+      setHazardType(type);
+    },
+    []
+  );
 
   const handleVoiceTranscript = useCallback((text) => {
     setDescription((prev) => {
@@ -89,21 +130,62 @@ export default function HazardForm({ isOpen, onClose, location, onSubmitSuccess 
       setError("Please describe the hazard.");
       return;
     }
-    if (!location) {
+    if (!location && !initialData) {
       setError("Please click on the map to set a location.");
       return;
     }
 
     setSubmitting(true);
     try {
-      const newHazard = await insertHazard({
+      // Upload photo if present
+      let photoUrl = initialData?.photo_url || null;
+      if (photo) {
+        try {
+          photoUrl = await uploadHazardPhoto(photo);
+        } catch (uploadErr) {
+          console.warn("Photo upload failed, continuing without photo:", uploadErr);
+          // Don't block submission if photo upload fails
+        }
+      }
+
+      const payload = {
         hazard_type: hazardType,
         description: description.trim(),
-        latitude: location.lat,
-        longitude: location.lng,
+        latitude: location ? location.lat : initialData?.latitude,
+        longitude: location ? location.lng : initialData?.longitude,
         reported_by: reportedBy.trim() || "anonymous",
-      });
-      onSubmitSuccess?.(newHazard);
+      };
+
+      // Only include photo/verification fields if they have values
+      // (prevents errors if DB migration hasn't been run yet)
+      if (photoUrl) payload.photo_url = photoUrl;
+      if (verificationResult) {
+        payload.verification_score = verificationResult.verification_score;
+        payload.verification_status = verificationResult.verification_status;
+        payload.is_ai_generated = verificationResult.is_ai_generated;
+        payload.ai_analysis = {
+          verified_type: verificationResult.verified_type,
+          severity: verificationResult.severity,
+          is_hazard: verificationResult.is_hazard,
+          verification_description: verificationResult.verification_description,
+          ai_detection_confidence: verificationResult.ai_detection_confidence,
+          ai_detection_reasoning: verificationResult.ai_detection_reasoning,
+        };
+      }
+
+      let savedHazard;
+      if (initialData?.id) {
+        // Check if dummy ID (length < 36 means it's not a UUID)
+        if (String(initialData.id).length < 36) {
+          savedHazard = { ...initialData, ...payload };
+        } else {
+          savedHazard = await updateHazard(initialData.id, payload);
+        }
+      } else {
+        savedHazard = await insertHazard(payload);
+      }
+
+      onSubmitSuccess?.(savedHazard);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -124,7 +206,9 @@ export default function HazardForm({ isOpen, onClose, location, onSubmitSuccess 
       <div className="hazard-form">
         {/* Header */}
         <div className="hazard-form__header">
-          <h2 className="hazard-form__title">🚨 Report a Hazard</h2>
+          <h2 className="hazard-form__title">
+            {initialData ? "✏️ Edit Hazard" : "🚨 Report a Hazard"}
+          </h2>
           <button
             type="button"
             className="hazard-form__close"
@@ -142,6 +226,10 @@ export default function HazardForm({ isOpen, onClose, location, onSubmitSuccess 
             {location ? (
               <span>
                 📍 Location: {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
+              </span>
+            ) : initialData ? (
+              <span>
+                📍 Location: {initialData.latitude.toFixed(4)}, {initialData.longitude.toFixed(4)} (unchanged)
               </span>
             ) : (
               <span className="hazard-form__location--empty">
@@ -216,6 +304,16 @@ export default function HazardForm({ isOpen, onClose, location, onSubmitSuccess 
           {/* Voice Input */}
           <VoiceInput onTranscript={handleVoiceTranscript} />
 
+          {/* ── Photo Upload + AI Verification ── */}
+          <PhotoUpload
+            photo={photo}
+            onPhotoChange={handlePhotoChange}
+            verifying={verifying}
+            verificationResult={verificationResult}
+            verificationError={verificationError}
+            onApplyType={handleApplyVerifiedType}
+          />
+
           {/* Reported By */}
           <div className="hazard-form__field">
             <label htmlFor="reported-by">Your Name (optional)</label>
@@ -240,7 +338,7 @@ export default function HazardForm({ isOpen, onClose, location, onSubmitSuccess 
           <button
             type="submit"
             className="hazard-form__submit"
-            disabled={submitting || !location}
+            disabled={submitting || (!location && !initialData)}
           >
             {submitting ? (
               <>
@@ -250,7 +348,7 @@ export default function HazardForm({ isOpen, onClose, location, onSubmitSuccess 
             ) : (
               <>
                 <Send size={18} />
-                Submit Report
+                {initialData ? "Save Changes" : "Submit Report"}
               </>
             )}
           </button>
