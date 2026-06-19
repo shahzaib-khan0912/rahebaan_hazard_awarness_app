@@ -33,7 +33,7 @@ export function useAIClassifier() {
     }
 
     const claudeKey = import.meta.env.VITE_CLAUDE_API_KEY;
-    const geminiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    const geminiKey = import.meta.env.VITE_GEMINI_API_KEY || "AQ.Ab8RN6K1q60delvr7cbtOD_680hCEwEoELBcjoNxwsSpWWdNeQ";
 
     // No API key configured — skip AI, user selects manually
     if (!claudeKey && !geminiKey) {
