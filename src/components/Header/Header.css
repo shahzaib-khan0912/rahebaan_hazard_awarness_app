@@ -161,3 +161,74 @@
     justify-content: center;
   }
 }
+
+/* User Profile Badge */
+.header__user-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px 4px 4px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.header__user-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: var(--color-bg);
+}
+
+.header__user-badge--guest .header__user-avatar {
+  background: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.header__user-email {
+  padding: 0 4px;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header__logout-btn, .header__login-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.header__logout-btn:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.header__login-btn {
+  background: var(--color-text);
+  color: var(--color-bg);
+  border-radius: 50px;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.header__login-btn:hover {
+  background: var(--color-primary);
+  color: white;
+}

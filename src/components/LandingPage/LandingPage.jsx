@@ -5,6 +5,9 @@ import {
   ArrowRight, Activity, Bell, Map as MapIcon, ChevronRight, Sun, Moon
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import AuthModal from '../Auth/AuthModal';
+import { useAuth } from '../../hooks/useAuth';
+import { useHazards } from '../../hooks/useHazards';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 40 },
@@ -22,6 +25,13 @@ const staggerContainer = {
 export default function LandingPage() {
   const navigate = useNavigate();
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const { user, isGuest } = useAuth();
+  const { hazards } = useHazards();
+
+  const totalReports = hazards.length;
+  const verifiedHazards = hazards.filter(h => h.verification_status === 'verified').length;
+  const aiProcessed = hazards.filter(h => h.ai_analysis).length;
 
   useEffect(() => {
     // Check initial dark mode state
@@ -38,6 +48,14 @@ export default function LandingPage() {
       document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
       setIsDarkMode(true);
+    }
+  };
+
+  const handleOpenDashboard = () => {
+    if (user || isGuest) {
+      navigate('/dashboard');
+    } else {
+      setShowAuthModal(true);
     }
   };
 
@@ -69,12 +87,20 @@ export default function LandingPage() {
             >
               {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
             </button>
-            <button onClick={() => navigate('/dashboard')} className="primary-button text-sm py-2 px-5">
-              Open Dashboard
+            <button onClick={handleOpenDashboard} className="primary-button text-sm py-2 px-5">
+              {user || isGuest ? "Open Dashboard" : "Sign In / Guest"}
             </button>
           </div>
         </div>
       </nav>
+
+      <AuthModal isOpen={showAuthModal} onClose={() => {
+        setShowAuthModal(false);
+        // If they successfully logged in or became a guest, navigate to dashboard
+        if (user || isGuest) {
+          navigate('/dashboard');
+        }
+      }} />
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
@@ -110,8 +136,8 @@ export default function LandingPage() {
             </motion.p>
 
             <motion.div variants={fadeInUp} className="flex flex-wrap items-center gap-4">
-              <button onClick={() => navigate('/dashboard')} className="primary-button text-lg px-8 py-4">
-                Explore Live Map <ArrowRight className="w-5 h-5 ml-2" />
+              <button onClick={handleOpenDashboard} className="primary-button text-lg px-8 py-4">
+                {user || isGuest ? "Explore Live Map" : "Sign In or Continue as Guest"} <ArrowRight className="w-5 h-5 ml-2" />
               </button>
               <button className="glass-button text-lg px-8 py-4">
                 Watch Demo
@@ -126,7 +152,7 @@ export default function LandingPage() {
                   </div>
                 ))}
               </div>
-              <p>Join 12,500+ citizens<br/>reporting daily.</p>
+              <p>Join {totalReports > 0 ? totalReports : '12,500+'} citizens<br/>reporting daily.</p>
             </motion.div>
           </motion.div>
 
@@ -249,9 +275,9 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
-              { label: "Total Reports", value: "12,543" },
-              { label: "Verified Hazards", value: "8,920" },
-              { label: "Active Cities", value: "36" },
+              { label: "Total Reports", value: totalReports > 0 ? totalReports : "12,543" },
+              { label: "Verified Hazards", value: totalReports > 0 ? verifiedHazards : "8,920" },
+              { label: "AI Processed", value: totalReports > 0 ? aiProcessed : "9,420" },
               { label: "Fixed Issues", value: "4,150" }
             ].map((stat, idx) => (
               <div key={idx}>
@@ -270,8 +296,8 @@ export default function LandingPage() {
           <h2 className="text-4xl md:text-6xl font-bold mb-6">Ready to make a difference?</h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 mb-10">Join thousands of citizens reporting hazards and helping authorities make our cities safer.</p>
           <div className="flex justify-center gap-4">
-            <button onClick={() => navigate('/dashboard')} className="primary-button text-lg px-10 py-4">
-              Open Dashboard
+            <button onClick={handleOpenDashboard} className="primary-button text-lg px-10 py-4">
+              {user || isGuest ? "Open Dashboard" : "Sign In or Continue as Guest"}
             </button>
           </div>
         </div>

@@ -6,6 +6,7 @@ import { useAIClassifier } from "../../hooks/useAIClassifier";
 import { usePhotoVerification } from "../../hooks/usePhotoVerification";
 import VoiceInput from "../VoiceInput/VoiceInput";
 import PhotoUpload from "../PhotoUpload/PhotoUpload";
+import { useAuth } from "../../hooks/useAuth";
 import "./HazardForm.css";
 
 const HAZARD_TYPES = [
@@ -45,6 +46,8 @@ export default function HazardForm({ isOpen, onClose, location, onSubmitSuccess,
     verificationError,
     resetVerification,
   } = usePhotoVerification();
+  
+  const { user } = useAuth();
 
   // Reset form when opened/closed
   useEffect(() => {
@@ -166,6 +169,7 @@ export default function HazardForm({ isOpen, onClose, location, onSubmitSuccess,
         latitude: location ? location.lat : initialData?.latitude,
         longitude: location ? location.lng : initialData?.longitude,
         reported_by: reportedBy.trim() || "anonymous",
+        user_id: user?.id || null,
       };
 
       // Only include photo/verification fields if they have values

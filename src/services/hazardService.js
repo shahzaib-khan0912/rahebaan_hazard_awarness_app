@@ -97,6 +97,6 @@ export async function deleteHazard(id) {
   
   // If RLS blocked the delete, data will be empty or null
   if (!data || data.length === 0) {
-    throw new Error("Deletion was blocked by database Row-Level Security (RLS) policies. Please run the SQL migration (002_add_photo_verification.sql) in your Supabase SQL Editor to enable delete access.");
+    throw new Error("You do not have permission to delete this hazard. You can only delete reports that you created while logged in.");
   }
 }

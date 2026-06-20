@@ -33,10 +33,29 @@ export function useAIClassifier() {
     }
 
     const claudeKey = import.meta.env.VITE_CLAUDE_API_KEY;
-    const geminiKey = import.meta.env.VITE_GEMINI_API_KEY || "AQ.Ab8RN6K1q60delvr7cbtOD_680hCEwEoELBcjoNxwsSpWWdNeQ";
+    const geminiKeyEnv = import.meta.env.VITE_GEMINI_API_KEY;
+    const groqKey = import.meta.env.VITE_GROQ_API_KEY;
+
+    // Determine key and provider with preference: Claude -> Gemini (Env) -> Groq -> Gemini (Hardcoded fallback)
+    let activeKey = null;
+    let provider = null;
+
+    if (claudeKey) {
+      activeKey = claudeKey;
+      provider = "claude";
+    } else if (geminiKeyEnv) {
+      activeKey = geminiKeyEnv;
+      provider = "gemini";
+    } else if (groqKey) {
+      activeKey = groqKey;
+      provider = "groq";
+    } else {
+      activeKey = "AQ.Ab8RN6K1q60delvr7cbtOD_680hCEwEoELBcjoNxwsSpWWdNeQ";
+      provider = "gemini";
+    }
 
     // No API key configured — skip AI, user selects manually
-    if (!claudeKey && !geminiKey) {
+    if (!activeKey) {
       console.info("No AI API key configured. Skipping auto-classification.");
       return null;
     }
@@ -45,12 +64,14 @@ export function useAIClassifier() {
     setAiError(null);
 
     try {
-      let result;
+      let result = null;
 
-      if (claudeKey) {
-        result = await classifyWithClaude(description, claudeKey);
-      } else if (geminiKey) {
-        result = await classifyWithGemini(description, geminiKey);
+      if (provider === "claude") {
+        result = await classifyWithClaude(description, activeKey);
+      } else if (provider === "gemini") {
+        result = await classifyWithGemini(description, activeKey);
+      } else if (provider === "groq") {
+        result = await classifyWithGroq(description, activeKey);
       }
 
       // Validate the response
@@ -144,3 +165,41 @@ async function classifyWithGemini(description, apiKey) {
   const cleaned = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
   return JSON.parse(cleaned);
 }
+
+/**
+ * Classify using Groq API.
+ */
+async function classifyWithGroq(description, apiKey) {
+  const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: "llama-3.3-70b-versatile",
+      messages: [
+        {
+          role: "system",
+          content: SYSTEM_PROMPT,
+        },
+        {
+          role: "user",
+          content: `Classify this road hazard report:\n"${description}"`,
+        },
+      ],
+      temperature: 0.1,
+      response_format: { type: "json_object" },
+    }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(`Groq API error ${response.status}: ${errorBody}`);
+  }
+
+  const data = await response.json();
+  const text = data.choices?.[0]?.message?.content || "";
+  return JSON.parse(text.trim());
+}
+

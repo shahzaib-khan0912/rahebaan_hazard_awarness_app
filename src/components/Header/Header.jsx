@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { MapPin, AlertTriangle, Shield, Sun, Moon } from "lucide-react";
+import { MapPin, AlertTriangle, Shield, Sun, Moon, User as UserIcon, LogOut, LogIn } from "lucide-react";
+import { useAuth } from "../../hooks/useAuth";
+import AuthModal from "../Auth/AuthModal";
 import "./Header.css";
 
 /**
@@ -10,6 +12,8 @@ import "./Header.css";
 export default function Header({ onReportClick }) {
   const [scrolled, setScrolled] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const { user, isGuest, logout } = useAuth();
 
   useEffect(() => {
     // Check initial dark mode state
@@ -61,11 +65,38 @@ export default function Header({ onReportClick }) {
         >
           {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
         </button>
-        <button className="header__report-btn" onClick={onReportClick} id="report-hazard-btn">
-          <AlertTriangle size={16} />
-          <span>Report Hazard</span>
-        </button>
+        
+        {/* User Profile Badge */}
+        {user ? (
+          <div className="header__user-badge">
+            <div className="header__user-avatar">
+              <UserIcon size={16} />
+            </div>
+            <span className="header__user-email">{user.email.split('@')[0]}</span>
+            <button onClick={logout} className="header__logout-btn" title="Log Out">
+              <LogOut size={16} />
+            </button>
+          </div>
+        ) : isGuest ? (
+          <div className="header__user-badge header__user-badge--guest">
+            <div className="header__user-avatar">
+              <UserIcon size={16} />
+            </div>
+            <span className="header__user-email">Guest</span>
+            <button onClick={() => setShowAuthModal(true)} className="header__login-btn" title="Sign In">
+              <LogIn size={16} />
+              <span>Sign In</span>
+            </button>
+          </div>
+        ) : (
+          <button onClick={() => setShowAuthModal(true)} className="header__report-btn">
+            <LogIn size={16} />
+            <span>Log In</span>
+          </button>
+        )}
       </div>
+
+      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </header>
   );
 }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Clock, MapPin, Camera } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, MapPin, CameraOff } from "lucide-react";
 import { VerificationBadges } from "../VerificationBadge/VerificationBadge";
 import "./Sidebar.css";
 
@@ -74,9 +74,13 @@ export default function Sidebar({ hazards, onHazardClick, filterType }) {
                   className="sidebar__dot"
                   style={{ background: HAZARD_COLORS[hazard.hazard_type] || "#6b7280" }}
                 />
-                {hazard.photo_url && (
+                {hazard.photo_url ? (
                   <div className="sidebar__item-thumb">
                     <img src={hazard.photo_url} alt="" loading="lazy" />
+                  </div>
+                ) : (
+                  <div className="sidebar__item-thumb sidebar__item-thumb--empty">
+                    <CameraOff size={16} color="rgba(255, 255, 255, 0.3)" />
                   </div>
                 )}
                 <div className="sidebar__item-content">

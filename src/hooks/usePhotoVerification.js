@@ -58,10 +58,28 @@ export function usePhotoVerification() {
   const [verificationError, setVerificationError] = useState(null);
 
   const verify = useCallback(async (file, reportedType) => {
-    const geminiKey = import.meta.env.VITE_GEMINI_API_KEY || "AQ.Ab8RN6K1q60delvr7cbtOD_680hCEwEoELBcjoNxwsSpWWdNeQ";
     const claudeKey = import.meta.env.VITE_CLAUDE_API_KEY;
+    const geminiKeyEnv = import.meta.env.VITE_GEMINI_API_KEY;
+    const groqKey = import.meta.env.VITE_GROQ_API_KEY;
 
-    if (!geminiKey && !claudeKey) {
+    let activeKey = null;
+    let provider = null;
+
+    if (claudeKey) {
+      activeKey = claudeKey;
+      provider = "claude";
+    } else if (geminiKeyEnv) {
+      activeKey = geminiKeyEnv;
+      provider = "gemini";
+    } else if (groqKey) {
+      activeKey = groqKey;
+      provider = "groq";
+    } else {
+      activeKey = "AQ.Ab8RN6K1q60delvr7cbtOD_680hCEwEoELBcjoNxwsSpWWdNeQ";
+      provider = "gemini";
+    }
+
+    if (!activeKey) {
       console.info("No AI API key configured. Skipping photo verification.");
       return null;
     }
@@ -77,12 +95,16 @@ export function usePhotoVerification() {
 
       // Run both agents in parallel
       const [hazardResult, aiDetectionResult] = await Promise.allSettled([
-        geminiKey
-          ? runGeminiVisionAgent(geminiKey, base64Data, mimeType, buildVerificationPrompt(reportedType))
-          : runClaudeVisionAgent(claudeKey, base64Data, mimeType, buildVerificationPrompt(reportedType)),
-        geminiKey
-          ? runGeminiVisionAgent(geminiKey, base64Data, mimeType, AI_DETECTION_PROMPT)
-          : runClaudeVisionAgent(claudeKey, base64Data, mimeType, AI_DETECTION_PROMPT),
+        provider === "gemini"
+          ? runGeminiVisionAgent(activeKey, base64Data, mimeType, buildVerificationPrompt(reportedType))
+          : provider === "groq"
+          ? runGroqVisionAgent(activeKey, base64Data, mimeType, buildVerificationPrompt(reportedType))
+          : runClaudeVisionAgent(activeKey, base64Data, mimeType, buildVerificationPrompt(reportedType)),
+        provider === "gemini"
+          ? runGeminiVisionAgent(activeKey, base64Data, mimeType, AI_DETECTION_PROMPT)
+          : provider === "groq"
+          ? runGroqVisionAgent(activeKey, base64Data, mimeType, AI_DETECTION_PROMPT)
+          : runClaudeVisionAgent(activeKey, base64Data, mimeType, AI_DETECTION_PROMPT),
       ]);
 
       // Process Agent 1 result
@@ -262,3 +284,48 @@ async function runClaudeVisionAgent(apiKey, base64Data, mimeType, prompt) {
   const text = data.content?.[0]?.text || "";
   return JSON.parse(text);
 }
+
+/**
+ * Run a Groq Vision API call with an image.
+ */
+async function runGroqVisionAgent(apiKey, base64Data, mimeType, prompt) {
+  const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: "meta-llama/llama-4-scout-17b-16e-instruct",
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: prompt,
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:${mimeType};base64,${base64Data}`,
+              },
+            },
+          ],
+        },
+      ],
+      temperature: 0.1,
+      response_format: { type: "json_object" },
+    }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(`Groq Vision API error ${response.status}: ${errorBody}`);
+  }
+
+  const data = await response.json();
+  const text = data.choices?.[0]?.message?.content || "";
+  return JSON.parse(text.trim());
+}
+

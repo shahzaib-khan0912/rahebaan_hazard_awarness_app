@@ -1,5 +1,6 @@
 import { X, Clock, MapPin, AlertTriangle, TrafficCone, Droplets, Activity, CircleDot, HelpCircle, Edit2, Trash2, Camera, ExternalLink } from "lucide-react";
 import VerificationBadge from "../VerificationBadge/VerificationBadge";
+import { useAuth } from "../../hooks/useAuth";
 import "./HazardDetail.css";
 
 const HAZARD_COLORS = {
@@ -39,6 +40,8 @@ function timeAgo(dateString) {
  * @param {{ hazard: Object|null, onClose: () => void, onEdit: (hazard) => void, onDelete: (hazard) => void }} props
  */
 export default function HazardDetail({ hazard, onClose, onEdit, onDelete }) {
+  const { user, isAdmin } = useAuth();
+  
   if (!hazard) return null;
 
   const color = HAZARD_COLORS[hazard.hazard_type] || HAZARD_COLORS["Other"];
@@ -182,25 +185,29 @@ export default function HazardDetail({ hazard, onClose, onEdit, onDelete }) {
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="hazard-detail__actions">
-            <button 
-              className="hazard-detail__action-btn hazard-detail__action-btn--edit"
-              onClick={() => onEdit?.(hazard)}
-            >
-              <Edit2 size={16} /> Edit
-            </button>
-            <button 
-              className="hazard-detail__action-btn hazard-detail__action-btn--delete"
-              onClick={() => {
-                if (window.confirm("Are you sure you want to delete this hazard report?")) {
-                  onDelete?.(hazard);
-                }
-              }}
-            >
-              <Trash2 size={16} /> Delete
-            </button>
-          </div>
+          {/* Actions - Visible to owner or admin */}
+          {(isAdmin || (user && hazard.user_id === user.id)) && (
+            <div className="hazard-detail__actions">
+              {(user && hazard.user_id === user.id) && (
+                <button 
+                  className="hazard-detail__action-btn hazard-detail__action-btn--edit"
+                  onClick={() => onEdit?.(hazard)}
+                >
+                  <Edit2 size={16} /> Edit
+                </button>
+              )}
+              <button 
+                className="hazard-detail__action-btn hazard-detail__action-btn--delete"
+                onClick={() => {
+                  if (window.confirm("Are you sure you want to delete this hazard report?")) {
+                    onDelete?.(hazard);
+                  }
+                }}
+              >
+                <Trash2 size={16} /> Delete
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </>
