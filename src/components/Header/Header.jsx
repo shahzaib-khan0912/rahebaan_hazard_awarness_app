@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { MapPin, AlertTriangle, Shield } from "lucide-react";
+import { MapPin, AlertTriangle, Shield, Sun, Moon } from "lucide-react";
 import "./Header.css";
 
 /**
@@ -9,6 +9,25 @@ import "./Header.css";
  */
 export default function Header({ onReportClick }) {
   const [scrolled, setScrolled] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
+  useEffect(() => {
+    // Check initial dark mode state
+    const isDark = document.documentElement.classList.contains('dark');
+    setIsDarkMode(isDark);
+  }, []);
+
+  const toggleTheme = () => {
+    if (isDarkMode) {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+      setIsDarkMode(false);
+    } else {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+      setIsDarkMode(true);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,6 +54,13 @@ export default function Header({ onReportClick }) {
           <span className="header__status-dot" />
           <span className="header__status-text">Live</span>
         </div>
+        <button 
+          onClick={toggleTheme} 
+          className="p-2 rounded-full bg-dark-card border border-dark-border text-[var(--color-text)] hover:bg-black/10 dark:hover:bg-white/10 transition-colors flex items-center justify-center"
+          title="Toggle Theme"
+        >
+          {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
         <button className="header__report-btn" onClick={onReportClick} id="report-hazard-btn">
           <AlertTriangle size={16} />
           <span>Report Hazard</span>

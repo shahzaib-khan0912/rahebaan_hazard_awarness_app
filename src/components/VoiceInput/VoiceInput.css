@@ -81,7 +81,7 @@
   padding: var(--space-xs) var(--space-sm);
   border: 1px solid #d1d5db;
   border-radius: var(--radius-sm);
-  background: white;
+  background: var(--color-surface);
   color: var(--color-text);
   font-size: 0.85rem;
   cursor: pointer;
@@ -90,7 +90,7 @@
 
 .voice-input__lang-btn:hover {
   border-color: var(--color-primary);
-  background: #f0fdf4;
+  background: var(--color-bg);
 }
 
 /* Status text */
@@ -110,7 +110,7 @@
 .voice-input__transcript {
   margin-top: var(--space-sm);
   padding: var(--space-sm) var(--space-md);
-  background: #f0fdf4;
+  background: var(--color-bg);
   border-left: 3px solid var(--color-primary);
   border-radius: var(--radius-sm);
   font-size: 0.9rem;

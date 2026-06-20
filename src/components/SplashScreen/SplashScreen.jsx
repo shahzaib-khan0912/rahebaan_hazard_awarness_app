@@ -20,14 +20,14 @@ export default function SplashScreen({ onComplete }) {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
           transition={{ duration: 0.8, ease: "easeInOut" }}
-          className="fixed inset-0 z-[9999] bg-dark-bg flex flex-col items-center justify-center overflow-hidden"
+          className="fixed inset-0 z-[9999] bg-[var(--color-bg)] flex flex-col items-center justify-center overflow-hidden"
         >
           {/* Animated Background Elements */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <motion.div 
               animate={{ rotate: 360 }}
               transition={{ duration: 100, repeat: Infinity, ease: "linear" }}
-              className="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-[radial-gradient(ellipse_at_center,rgba(0,200,83,0.15)_0%,rgba(11,18,32,1)_50%)]"
+              className="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-[radial-gradient(ellipse_at_center,rgba(0,200,83,0.15)_0%,transparent_50%)]"
             />
           </div>
 
@@ -50,8 +50,8 @@ export default function SplashScreen({ onComplete }) {
                 className="absolute inset-[-20px] border border-primary rounded-full"
               />
               
-              <div className="bg-dark-card backdrop-blur-md p-6 rounded-2xl border border-white/10 shadow-[0_0_30px_rgba(0,200,83,0.3)]">
-                <MapPin className="text-primary w-12 h-12" />
+              <div className="bg-[var(--color-card)] backdrop-blur-md p-2 rounded-full border border-black/10 dark:border-white/10 shadow-[0_0_30px_rgba(0,200,83,0.3)] flex items-center justify-center">
+                <img src="/logo.png" alt="Pakistan Hazard Reporter Logo" className="w-24 h-24 rounded-full object-cover" />
               </div>
 
               {/* Floating Icons */}
@@ -90,7 +90,7 @@ export default function SplashScreen({ onComplete }) {
                 initial={{ y: 100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.8, delay: 1, ease: [0.2, 0.8, 0.2, 1] }}
-                className="text-4xl md:text-5xl lg:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400 leading-tight"
+                className="text-4xl md:text-5xl lg:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 leading-tight"
               >
                 Pakistan Hazard<br/>Reporter
               </motion.h1>
@@ -101,7 +101,7 @@ export default function SplashScreen({ onComplete }) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 1, delay: 1.8 }}
-                className="text-gray-400 font-inter text-lg max-w-md mx-auto"
+                className="text-gray-600 dark:text-gray-400 font-inter text-lg max-w-md mx-auto"
               >
                 Making Pakistan's Roads Safer with AI and Community Power
               </motion.p>

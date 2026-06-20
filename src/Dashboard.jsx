@@ -101,11 +101,11 @@ export default function Dashboard() {
   }, [refetch]);
 
   return (
-    <div className="flex flex-col h-screen bg-dark-bg overflow-hidden relative">
+    <div className="flex flex-col h-screen bg-[var(--color-bg)] overflow-hidden relative">
       {/* Back to Home Button (Floating) */}
       <button 
         onClick={() => navigate('/')}
-        className="absolute top-4 left-4 z-[1000] w-10 h-10 bg-dark-card border border-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/10 transition-colors backdrop-blur-md shadow-lg"
+        className="absolute top-4 left-4 z-[1000] w-10 h-10 bg-[var(--color-card)] border border-black/10 dark:border-white/10 rounded-full flex items-center justify-center text-[var(--color-text)] hover:bg-black/10 dark:hover:bg-white/10 transition-colors backdrop-blur-md shadow-lg"
       >
         <ChevronLeft size={20} />
       </button>

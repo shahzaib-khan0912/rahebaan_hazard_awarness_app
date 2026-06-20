@@ -4,6 +4,7 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -11,9 +12,9 @@ export default {
         secondary: '#1976D2',
         accent: '#FF6D00',
         dark: {
-          bg: '#0B1220',
-          card: 'rgba(255, 255, 255, 0.08)',
-          border: 'rgba(255, 255, 255, 0.1)'
+          bg: 'var(--color-bg)',
+          card: 'var(--color-card)',
+          border: 'var(--color-border)'
         }
       },
       fontFamily: {

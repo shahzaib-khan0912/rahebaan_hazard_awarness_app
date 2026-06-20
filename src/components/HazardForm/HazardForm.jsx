@@ -135,6 +135,18 @@ export default function HazardForm({ isOpen, onClose, location, onSubmitSuccess,
       return;
     }
 
+    // AI Gatekeeper logic
+    if (photo) {
+      if (verifying) {
+        setError("Please wait for AI photo verification to complete before submitting.");
+        return;
+      }
+      if (verificationResult && verificationResult.is_hazard === false) {
+        setError("AI detected that the photo does not contain a valid road hazard. Please upload a clear photo of the hazard or remove it.");
+        return;
+      }
+    }
+
     setSubmitting(true);
     try {
       // Upload photo if present

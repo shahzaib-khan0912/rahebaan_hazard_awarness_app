@@ -14,11 +14,13 @@
     --color-danger: #e63946;
     --color-warning: #f4a261;
     --color-success: #22c55e;
-    --color-surface: #111827; /* Dark surface */
-    --color-bg: #0B1220;
-    --color-text: #ffffff;
-    --color-text-muted: #9ca3af;
-    --color-border: rgba(255, 255, 255, 0.1);
+    /* Light Mode (default) */
+    --color-surface: #ffffff;
+    --color-bg: #f3f4f6;
+    --color-text: #1f2937;
+    --color-text-muted: #6b7280;
+    --color-border: rgba(0, 0, 0, 0.1);
+    --color-card: #ffffff;
 
     --hazard-pothole: #e63946;
     --hazard-signal: #f4a261;
@@ -48,8 +50,17 @@
     --header-height: 70px;
   }
 
+  .dark {
+    --color-surface: #111827;
+    --color-bg: #0B1220;
+    --color-text: #ffffff;
+    --color-text-muted: #9ca3af;
+    --color-border: rgba(255, 255, 255, 0.1);
+    --color-card: rgba(255, 255, 255, 0.08);
+  }
+
   body {
-    @apply bg-dark-bg text-white font-inter antialiased overflow-x-hidden;
+    @apply bg-dark-bg text-[color:var(--color-text)] font-inter antialiased overflow-x-hidden transition-colors duration-300;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -63,11 +74,11 @@
   }
   
   .glass-button {
-    @apply px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 backdrop-blur-md transition-all duration-300 font-medium tracking-wide flex items-center justify-center gap-2;
+    @apply px-6 py-3 rounded-full bg-dark-card hover:bg-black/10 dark:hover:bg-white/20 border border-dark-border backdrop-blur-md transition-all duration-300 font-medium tracking-wide flex items-center justify-center gap-2;
   }
   
   .primary-button {
-    @apply px-6 py-3 rounded-full bg-primary hover:bg-[#00E676] text-[#0B1220] font-bold shadow-[0_0_20px_rgba(0,200,83,0.4)] hover:shadow-[0_0_30px_rgba(0,200,83,0.6)] transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2;
+    @apply px-6 py-3 rounded-full bg-primary hover:bg-[#00E676] text-white dark:text-[#0B1220] font-bold shadow-[0_0_20px_rgba(0,200,83,0.4)] hover:shadow-[0_0_30px_rgba(0,200,83,0.6)] transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2;
   }
 }
 
@@ -76,7 +87,7 @@
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #0B1220;
+  background: var(--color-bg);
 }
 ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.2);
@@ -107,7 +118,7 @@
 
 /* Leaflet overrides for dark mode */
 .leaflet-container {
-  background: #0B1220 !important;
+  background: var(--color-bg) !important;
   font-family: 'Inter', sans-serif !important;
 }
 .leaflet-control-zoom {
