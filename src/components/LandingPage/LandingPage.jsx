@@ -182,7 +182,7 @@ export default function LandingPage() {
           >
             <video
               ref={videoRef}
-              src="/hazard.mp4"
+              src="https://kpdpkowzinqddgrdoapm.supabase.co/storage/v1/object/public/public-media/hazard.mp4"
               className="absolute inset-0 w-full h-full object-cover scale-[1.02]"
               autoPlay
               loop
