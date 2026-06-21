@@ -1,10 +1,11 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { 
-  ShieldAlert, Mic, BrainCircuit, Users, Navigation, 
-  ArrowRight, Activity, Bell, Map as MapIcon, ChevronRight, Sun, Moon
+import {
+  ShieldAlert, Mic, BrainCircuit, Users, Navigation,
+  ArrowRight, Activity, Bell, Map as MapIcon, ChevronRight, Sun, Moon,
+  Volume2, VolumeX
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import AuthModal from '../Auth/AuthModal';
 import { useAuth } from '../../hooks/useAuth';
 import { useHazards } from '../../hooks/useHazards';
@@ -24,7 +25,23 @@ const staggerContainer = {
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const videoRef = useRef(null);
+
+  const handleWatchDemo = () => {
+    if (videoRef.current) {
+      if (videoRef.current.requestFullscreen) {
+        videoRef.current.requestFullscreen();
+      } else if (videoRef.current.webkitRequestFullscreen) {
+        videoRef.current.webkitRequestFullscreen();
+      }
+      // If it's paused, try to play it when entering fullscreen
+      if (videoRef.current.paused) {
+        videoRef.current.play();
+      }
+    }
+  };
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const { user, isGuest } = useAuth();
   const { hazards } = useHazards();
@@ -72,7 +89,7 @@ export default function LandingPage() {
               Hazard<span className="text-primary">Reporter</span>
             </span>
           </div>
-          
+
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-[color:var(--color-text-muted)]">
             <a href="#features" className="hover:text-[color:var(--color-text)] transition-colors">Features</a>
             <a href="#how-it-works" className="hover:text-[color:var(--color-text)] transition-colors">How it Works</a>
@@ -80,8 +97,8 @@ export default function LandingPage() {
           </div>
 
           <div className="flex items-center gap-4">
-            <button 
-              onClick={toggleTheme} 
+            <button
+              onClick={toggleTheme}
               className="p-2 rounded-full bg-dark-card border border-dark-border text-[var(--color-text)] hover:bg-black/10 dark:hover:bg-white/10 transition-colors flex items-center justify-center"
               title="Toggle Theme"
             >
@@ -113,7 +130,7 @@ export default function LandingPage() {
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
-          <motion.div 
+          <motion.div
             initial="hidden"
             animate="visible"
             variants={staggerContainer}
@@ -125,7 +142,7 @@ export default function LandingPage() {
             </motion.div>
 
             <motion.h1 variants={fadeInUp} className="text-5xl lg:text-7xl font-bold leading-[1.1] mb-6">
-              Making Pakistan's Roads <br/>
+              Making Pakistan's Roads <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-400">
                 Safer Together.
               </span>
@@ -139,62 +156,46 @@ export default function LandingPage() {
               <button onClick={handleOpenDashboard} className="primary-button text-lg px-8 py-4">
                 {user || isGuest ? "Explore Live Map" : "Sign In or Continue as Guest"} <ArrowRight className="w-5 h-5 ml-2" />
               </button>
-              <button className="glass-button text-lg px-8 py-4">
+              <button onClick={handleWatchDemo} className="glass-button text-lg px-8 py-4">
                 Watch Demo
               </button>
             </motion.div>
-            
+
             <motion.div variants={fadeInUp} className="mt-12 flex items-center gap-6 text-sm text-gray-700 dark:text-gray-500 font-medium">
               <div className="flex -space-x-3">
-                {[1,2,3,4].map(i => (
-                  <div key={i} className={`w-10 h-10 rounded-full border-2 border-[color:var(--color-bg)] bg-[color:var(--color-surface)] flex items-center justify-center text-xs text-[color:var(--color-text)] z-[${10-i}]`}>
+                {[1, 2, 3, 4].map(i => (
+                  <div key={i} className={`w-10 h-10 rounded-full border-2 border-[color:var(--color-bg)] bg-[color:var(--color-surface)] flex items-center justify-center text-xs text-[color:var(--color-text)] z-[${10 - i}]`}>
                     User
                   </div>
                 ))}
               </div>
-              <p>Join {totalReports > 0 ? totalReports : '12,500+'} citizens<br/>reporting daily.</p>
+              <p>Join {totalReports} citizens<br />reporting daily.</p>
             </motion.div>
           </motion.div>
 
           {/* Hero Visual */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1, delay: 0.4, type: "spring" }}
-            className="relative h-[500px] w-full hidden lg:block"
+            className="relative h-[500px] w-[132%] ml-[-50.5px] hidden lg:block rounded-[2.5rem] overflow-hidden border border-black/10 dark:border-white/10 shadow-2xl bg-black group"
           >
-            <div className="absolute inset-0 bg-gradient-to-tr from-[var(--color-card)] to-transparent rounded-[2.5rem] border border-black/10 dark:border-white/10 shadow-2xl backdrop-blur-xl overflow-hidden flex items-center justify-center">
-              {/* Abstract Map Representation */}
-              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
-              
-              <motion.div className="relative w-full h-full p-8" animate={{ y: [0, -10, 0] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}>
-                {/* Mock UI Cards floating */}
-                <div className="absolute top-10 left-10 glass-panel p-4 flex items-center gap-4 w-64 transform -rotate-6">
-                  <div className="bg-red-500/20 p-3 rounded-xl"><ShieldAlert className="text-red-400" /></div>
-                  <div>
-                    <p className="text-sm font-bold">Severe Pothole</p>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">Reported 2 mins ago</p>
-                  </div>
-                </div>
-                
-                <div className="absolute bottom-20 right-10 glass-panel p-4 flex items-center gap-4 w-64 transform rotate-6">
-                  <div className="bg-blue-500/20 p-3 rounded-xl"><MapIcon className="text-blue-400" /></div>
-                  <div>
-                    <p className="text-sm font-bold">Waterlogging</p>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">Verified by 5 users</p>
-                  </div>
-                </div>
-
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-primary/30 rounded-full blur-xl animate-pulse"></div>
-                    <div className="bg-primary text-dark-bg p-4 rounded-2xl shadow-[0_0_30px_rgba(0,200,83,0.5)] relative z-10">
-                      <Mic className="w-8 h-8" />
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
+            <video
+              ref={videoRef}
+              src="/hazard.mp4"
+              className="absolute inset-0 w-full h-full object-cover scale-[1.02]"
+              autoPlay
+              loop
+              muted={isMuted}
+            />
+            {/* Custom Mute Toggle */}
+            <button
+              onClick={() => setIsMuted(!isMuted)}
+              className="absolute bottom-6 right-6 p-3 rounded-full bg-black/40 text-white backdrop-blur-md border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/60 z-10"
+              title={isMuted ? "Unmute" : "Mute"}
+            >
+              {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+            </button>
           </motion.div>
         </div>
       </section>
@@ -204,7 +205,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16 max-w-2xl mx-auto">
             <h2 className="text-primary text-sm font-bold tracking-widest uppercase mb-3">Core Capabilities</h2>
-            <h3 className="text-3xl md:text-5xl font-bold mb-6">Powered by AI.<br/>Driven by Community.</h3>
+            <h3 className="text-3xl md:text-5xl font-bold mb-6">Powered by AI.<br />Driven by Community.</h3>
             <p className="text-gray-600 dark:text-gray-400">Our platform utilizes cutting-edge technology to ensure accurate, instant, and actionable road hazard reporting.</p>
           </div>
 
@@ -217,12 +218,12 @@ export default function LandingPage() {
               { icon: Users, title: "Community Verification", desc: "Citizens can upvote and verify hazards to prioritize government response.", color: "text-pink-400", bg: "bg-pink-400/10" },
               { icon: Bell, title: "Instant Alerts", desc: "Get notified about severe hazards in your vicinity before you reach them.", color: "text-yellow-400", bg: "bg-yellow-400/10" },
             ].map((feature, idx) => (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                key={idx} 
+                key={idx}
                 className="glass-panel p-8 hover:-translate-y-2 transition-all duration-300 group cursor-pointer"
               >
                 <div className={`w-14 h-14 rounded-2xl ${feature.bg} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
@@ -242,11 +243,11 @@ export default function LandingPage() {
           <div className="text-center mb-16">
             <h3 className="text-3xl md:text-5xl font-bold mb-6">How It Works</h3>
           </div>
-          
+
           <div className="relative">
             {/* Connecting Line */}
             <div className="absolute top-1/2 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent -translate-y-1/2 hidden md:block"></div>
-            
+
             <div className="grid md:grid-cols-4 gap-8 relative z-10">
               {[
                 { step: "01", title: "Spot a Hazard", desc: "Notice a pothole, broken signal, or flooding." },
@@ -273,12 +274,11 @@ export default function LandingPage() {
       {/* Live Stats */}
       <section id="stats" className="py-20 bg-primary/5 border-y border-black/5 dark:border-white/5">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             {[
-              { label: "Total Reports", value: totalReports > 0 ? totalReports : "12,543" },
-              { label: "Verified Hazards", value: totalReports > 0 ? verifiedHazards : "8,920" },
-              { label: "AI Processed", value: totalReports > 0 ? aiProcessed : "9,420" },
-              { label: "Fixed Issues", value: "4,150" }
+              { label: "Total Reports", value: totalReports },
+              { label: "Verified Hazards", value: verifiedHazards },
+              { label: "AI Processed", value: aiProcessed }
             ].map((stat, idx) => (
               <div key={idx}>
                 <div className="text-4xl md:text-5xl font-bold text-[var(--color-text)] mb-2">{stat.value}</div>
@@ -302,7 +302,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-      
+
       {/* Footer */}
       <footer className="border-t border-black/10 dark:border-white/10 py-8 text-center text-gray-500 text-sm bg-[var(--color-bg)]">
         <p>© 2026 Pakistan Road Hazard Reporter. Built for Smart Cities.</p>

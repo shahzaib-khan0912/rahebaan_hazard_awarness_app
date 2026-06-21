@@ -137,6 +137,10 @@ export default function HazardForm({ isOpen, onClose, location, onSubmitSuccess,
       setError("Please click on the map to set a location.");
       return;
     }
+    if (!photo && !initialData?.photo_url) {
+      setError("Please upload an image of the hazard to submit.");
+      return;
+    }
 
     // AI Gatekeeper logic
     if (photo) {
