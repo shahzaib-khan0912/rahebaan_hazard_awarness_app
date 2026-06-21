@@ -161,16 +161,7 @@ export default function LandingPage() {
               </button>
             </motion.div>
 
-            <motion.div variants={fadeInUp} className="mt-12 flex items-center gap-6 text-sm text-gray-700 dark:text-gray-500 font-medium">
-              <div className="flex -space-x-3">
-                {[1, 2, 3, 4].map(i => (
-                  <div key={i} className={`w-10 h-10 rounded-full border-2 border-[color:var(--color-bg)] bg-[color:var(--color-surface)] flex items-center justify-center text-xs text-[color:var(--color-text)] z-[${10 - i}]`}>
-                    User
-                  </div>
-                ))}
-              </div>
-              <p>Join {totalReports} citizens<br />reporting daily.</p>
-            </motion.div>
+
           </motion.div>
 
           {/* Hero Visual */}
@@ -178,7 +169,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1, delay: 0.4, type: "spring" }}
-            className="relative h-[500px] w-[132%] ml-[-50.5px] hidden lg:block rounded-[2.5rem] overflow-hidden border border-black/10 dark:border-white/10 shadow-2xl bg-black group"
+            className="relative mt-12 lg:mt-0 h-[300px] lg:h-[500px] w-full lg:w-[132%] ml-0 lg:ml-[-50.5px] rounded-[2.5rem] overflow-hidden border border-black/10 dark:border-white/10 shadow-2xl bg-black group"
           >
             <video
               ref={videoRef}
@@ -187,6 +178,7 @@ export default function LandingPage() {
               autoPlay
               loop
               muted={isMuted}
+              playsInline
             />
             {/* Custom Mute Toggle */}
             <button
@@ -248,12 +240,13 @@ export default function LandingPage() {
             {/* Connecting Line */}
             <div className="absolute top-1/2 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent -translate-y-1/2 hidden md:block"></div>
 
-            <div className="grid md:grid-cols-4 gap-8 relative z-10">
+            <div className="grid md:grid-cols-5 gap-8 relative z-10">
               {[
                 { step: "01", title: "Spot a Hazard", desc: "Notice a pothole, broken signal, or flooding." },
                 { step: "02", title: "Tap to Speak", desc: "Hit the mic button and describe what you see." },
-                { step: "03", title: "AI Processing", desc: "AI extracts type, severity, and exact location." },
-                { step: "04", title: "Live on Map", desc: "Hazard is instantly broadcasted to the city map." }
+                { step: "03", title: "Upload Photo", desc: "Snap a picture to provide mandatory evidence." },
+                { step: "04", title: "AI Processing", desc: "AI extracts type, severity, and exact location." },
+                { step: "05", title: "Live on Map", desc: "Hazard is instantly broadcasted to the city map." }
               ].map((item, idx) => (
                 <div key={idx} className="glass-panel p-6 relative overflow-hidden group">
                   <div className="absolute -right-4 -top-4 text-7xl font-bold text-black/5 dark:text-white/5 group-hover:text-primary/10 transition-colors">
