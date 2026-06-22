@@ -51,7 +51,7 @@ export default function SplashScreen({ onComplete }) {
               />
               
               <div className="bg-[var(--color-card)] backdrop-blur-md p-2 rounded-full border border-black/10 dark:border-white/10 shadow-[0_0_30px_rgba(0,200,83,0.3)] flex items-center justify-center">
-                <img src="/logo.png" alt="Pakistan Hazard Reporter Logo" className="w-24 h-24 rounded-full object-cover" />
+                <img src="/logo.png" alt="RAHEBAAN Logo" className="w-24 h-24 rounded-full object-cover" />
               </div>
 
               {/* Floating Icons */}
@@ -92,7 +92,7 @@ export default function SplashScreen({ onComplete }) {
                 transition={{ duration: 0.8, delay: 1, ease: [0.2, 0.8, 0.2, 1] }}
                 className="text-4xl md:text-5xl lg:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 leading-tight"
               >
-                Pakistan Hazard<br/>Reporter
+                RAHEBAAN
               </motion.h1>
             </motion.div>
 
