@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS admins (
 ALTER TABLE admins ENABLE ROW LEVEL SECURITY;
 
 -- 3. Policy: Users can only read their own admin status
+DROP POLICY IF EXISTS "Allow users to read their own admin status" ON admins;
 CREATE POLICY "Allow users to read their own admin status"
     ON admins 
     FOR SELECT 
@@ -27,6 +28,7 @@ DROP POLICY IF EXISTS "Allow secure delete access" ON hazards;
 DROP POLICY IF EXISTS "Allow public delete access" ON hazards;
 
 -- 5. Create new delete policy: Owners AND Admins can delete
+DROP POLICY IF EXISTS "Allow owner and admins to delete" ON hazards;
 CREATE POLICY "Allow owner and admins to delete"
     ON hazards
     FOR DELETE

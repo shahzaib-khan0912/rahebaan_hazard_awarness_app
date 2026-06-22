@@ -34,6 +34,7 @@ COMMENT ON COLUMN hazards.ai_analysis IS 'Full JSON response from the AI verific
 -- (existing SELECT/INSERT policies already cover all columns via *)
 
 -- 6. Add UPDATE policy so users can update verification data
+DROP POLICY IF EXISTS "Allow public update access" ON hazards;
 CREATE POLICY "Allow public update access"
     ON hazards
     FOR UPDATE
@@ -42,6 +43,7 @@ CREATE POLICY "Allow public update access"
     WITH CHECK (true);
 
 -- 7. Add DELETE policy so users can delete hazard reports
+DROP POLICY IF EXISTS "Allow public delete access" ON hazards;
 CREATE POLICY "Allow public delete access"
     ON hazards
     FOR DELETE

@@ -16,6 +16,7 @@ DROP POLICY IF EXISTS "Allow public insert access" ON hazards;
 -- 3. Create a STRICT insert policy
 --    - Logged-in users MUST insert their own user_id.
 --    - Guests (anon) MUST insert with user_id as NULL.
+DROP POLICY IF EXISTS "Allow secure insert access" ON hazards;
 CREATE POLICY "Allow secure insert access"
     ON hazards
     FOR INSERT
@@ -27,6 +28,7 @@ CREATE POLICY "Allow secure insert access"
     );
 
 -- 4. Create an UPDATE policy (Strictly Owners Only)
+DROP POLICY IF EXISTS "Allow owner to update" ON hazards;
 CREATE POLICY "Allow owner to update"
     ON hazards
     FOR UPDATE
@@ -35,6 +37,7 @@ CREATE POLICY "Allow owner to update"
     WITH CHECK (auth.uid() = user_id);
 
 -- 5. Create a DELETE policy (Strictly Owners Only)
+DROP POLICY IF EXISTS "Allow owner to delete" ON hazards;
 CREATE POLICY "Allow owner to delete"
     ON hazards
     FOR DELETE

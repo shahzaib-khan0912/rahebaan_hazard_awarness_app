@@ -26,6 +26,7 @@ COMMENT ON TABLE hazards IS 'Stores crowd-sourced road hazard reports across Pak
 ALTER TABLE hazards ENABLE ROW LEVEL SECURITY;
 
 -- 5. Policy: Allow anyone to READ all hazard reports
+DROP POLICY IF EXISTS "Allow public read access" ON hazards;
 CREATE POLICY "Allow public read access"
     ON hazards
     FOR SELECT
@@ -33,6 +34,7 @@ CREATE POLICY "Allow public read access"
     USING (true);
 
 -- 6. Policy: Allow anyone to INSERT new hazard reports
+DROP POLICY IF EXISTS "Allow public insert access" ON hazards;
 CREATE POLICY "Allow public insert access"
     ON hazards
     FOR INSERT
