@@ -14,7 +14,7 @@ A crowd-sourced platform that empowers Pakistani citizens to report road hazards
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Tech stack
 
 | Layer      | Technology                        |
 | ---------- | --------------------------------- |
