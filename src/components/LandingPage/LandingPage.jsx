@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, useInView, animate } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
   ShieldAlert, Mic, BrainCircuit, Users, Navigation,
@@ -22,6 +22,41 @@ const staggerContainer = {
     transition: { staggerChildren: 0.2 }
   }
 };
+
+function AnimatedStat({ value, label }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  const [displayValue, setDisplayValue] = useState(1);
+
+  useEffect(() => {
+    if (isInView) {
+      const controls = animate(1, value, {
+        duration: 2,
+        ease: "easeOut",
+        onUpdate: (v) => {
+          setDisplayValue(Math.floor(v));
+        }
+      });
+      return () => controls.stop();
+    }
+  }, [isInView, value]);
+
+  return (
+    <motion.div 
+      ref={ref}
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+    >
+      <div className="text-4xl md:text-5xl font-bold text-[var(--color-text)] mb-2">
+        {displayValue}
+      </div>
+      <div className="text-sm text-primary font-medium tracking-wide uppercase">
+        {label}
+      </div>
+    </motion.div>
+  );
+}
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -86,7 +121,7 @@ export default function LandingPage() {
               <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
             </div>
             <span className="font-poppins font-bold text-lg tracking-wide hidden sm:block">
-              Hazard<span className="text-primary">Reporter</span>
+              RAHE<span className="text-primary">BAAN</span>
             </span>
           </div>
 
@@ -240,7 +275,19 @@ export default function LandingPage() {
             {/* Connecting Line */}
             <div className="absolute top-1/2 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent -translate-y-1/2 hidden md:block"></div>
 
-            <div className="grid md:grid-cols-5 gap-8 relative z-10">
+            <motion.div 
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-50px" }}
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: { staggerChildren: 0.15 }
+                }
+              }}
+              className="grid md:grid-cols-5 gap-8 relative z-10"
+            >
               {[
                 { step: "01", title: "Spot a Hazard", desc: "Notice a pothole, broken signal, or flooding." },
                 { step: "02", title: "Tap to Speak", desc: "Hit the mic button and describe what you see." },
@@ -248,18 +295,22 @@ export default function LandingPage() {
                 { step: "04", title: "AI Processing", desc: "AI extracts type, severity, and exact location." },
                 { step: "05", title: "Live on Map", desc: "Hazard is instantly broadcasted to the city map." }
               ].map((item, idx) => (
-                <div key={idx} className="glass-panel p-6 relative overflow-hidden group">
-                  <div className="absolute -right-4 -top-4 text-7xl font-bold text-black/5 dark:text-white/5 group-hover:text-primary/10 transition-colors">
+                <motion.div 
+                  key={idx} 
+                  variants={{
+                    hidden: { opacity: 0, y: 30 },
+                    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+                  }}
+                  className="glass-panel p-6 relative overflow-hidden group hover:shadow-[0_8px_30px_rgba(0,200,83,0.12)] transition-all duration-300 transform hover:-translate-y-2"
+                >
+                  <div className="w-12 h-12 rounded-full bg-[var(--color-bg)] border border-black/10 dark:border-white/10 flex items-center justify-center font-bold text-primary mb-4 shadow-sm group-hover:bg-primary group-hover:text-white transition-colors duration-300">
                     {item.step}
                   </div>
-                  <div className="w-12 h-12 rounded-full bg-[var(--color-bg)] border border-black/10 dark:border-white/10 flex items-center justify-center font-bold text-primary mb-4 relative z-10">
-                    {item.step}
-                  </div>
-                  <h4 className="text-lg font-bold mb-2 relative z-10">{item.title}</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 relative z-10">{item.desc}</p>
-                </div>
+                  <h4 className="text-lg font-bold mb-2 text-[var(--color-text)]">{item.title}</h4>
+                  <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">{item.desc}</p>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -273,10 +324,7 @@ export default function LandingPage() {
               { label: "Verified Hazards", value: verifiedHazards },
               { label: "AI Processed", value: aiProcessed }
             ].map((stat, idx) => (
-              <div key={idx}>
-                <div className="text-4xl md:text-5xl font-bold text-[var(--color-text)] mb-2">{stat.value}</div>
-                <div className="text-sm text-primary font-medium tracking-wide uppercase">{stat.label}</div>
-              </div>
+              <AnimatedStat key={idx} value={stat.value} label={stat.label} />
             ))}
           </div>
         </div>
@@ -298,7 +346,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="border-t border-black/10 dark:border-white/10 py-8 text-center text-gray-500 text-sm bg-[var(--color-bg)]">
-        <p>© 2026 Pakistan Road Hazard Reporter. Built for Smart Cities.</p>
+        <p>© 2026 RAHEBAAN. Built for Smart Cities.</p>
       </footer>
     </div>
   );

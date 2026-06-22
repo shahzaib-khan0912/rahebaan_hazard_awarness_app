@@ -56,7 +56,7 @@ export default function AuthModal({ isOpen, onClose }) {
 
         <div className="auth-header">
           <div className="auth-logo bg-primary/20">
-            <img src="/green.png" alt="Hazard Reporter Logo" className="w-8 h-8 object-contain" />
+            <img src="/green.png" alt="RAHEBAAN Logo" className="w-8 h-8 object-contain" />
           </div>
           <h2>{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
           <p>{isLogin ? 'Login to manage your hazard reports' : 'Join the community to track your reports'}</p>

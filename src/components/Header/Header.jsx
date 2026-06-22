@@ -48,8 +48,8 @@ export default function Header({ onReportClick }) {
           <Shield size={20} className="header__logo-icon" />
         </div>
         <div className="header__text">
-          <h1 className="header__title">Road Hazard Reporter</h1>
-          <span className="header__subtitle">Pakistan</span>
+          <h1 className="header__title">RAHEBAAN</h1>
+          <span className="header__subtitle">Road Hazard Reporter</span>
         </div>
       </div>
 
