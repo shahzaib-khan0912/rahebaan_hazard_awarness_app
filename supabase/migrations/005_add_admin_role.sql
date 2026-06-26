@@ -38,10 +38,3 @@ CREATE POLICY "Allow owner and admins to delete"
         OR 
         EXISTS (SELECT 1 FROM admins WHERE admins.user_id = auth.uid())
     );
-
--- ============================================================
--- HOW TO USE:
--- 1. Run this script in the Supabase SQL Editor.
--- 2. To make someone an admin, manually insert their user UUID 
---    into the "admins" table via the Supabase Table Editor.
--- ============================================================
