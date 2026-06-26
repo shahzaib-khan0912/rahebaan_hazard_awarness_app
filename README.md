@@ -23,9 +23,9 @@ A crowd-sourced platform that empowers Pakistani citizens to report road hazards
 | Database   | Supabase (PostgreSQL)             |
 | Icons      | Lucide React                      |
 | Voice      | Web Speech API (browser-native)   |
-| AI/NLP     | Claude API or Google Gemini API   |
+| AI/NLP     | Groq API                          |
 
-
+---
 
 ## Application link : https://rahebaan.vercel.app/
 
