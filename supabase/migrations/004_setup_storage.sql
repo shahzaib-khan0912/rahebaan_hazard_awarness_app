@@ -33,10 +33,3 @@ ON storage.objects
 FOR DELETE
 TO authenticated
 USING (bucket_id = 'hazard-photos' AND owner = auth.uid());
-
--- ============================================================
--- HOW TO RUN:
--- 1. Go to your Supabase Dashboard → SQL Editor
--- 2. Paste this entire script
--- 3. Click "Run"
--- ============================================================
