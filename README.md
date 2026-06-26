@@ -27,7 +27,7 @@ A crowd-sourced platform that empowers Pakistani citizens to report road hazards
 
 
 
-## Website link : https://rahebaan.vercel.app/
+## Application link : https://rahebaan.vercel.app/
 
 
 
