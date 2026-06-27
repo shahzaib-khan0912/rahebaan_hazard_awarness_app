@@ -122,7 +122,7 @@ export default function PhotoUpload({
     <div className="photo-upload">
       <span className="photo-upload__label">
         <Camera size={14} style={{ display: "inline", marginRight: "0.35rem", verticalAlign: "-2px" }} />
-        Photo Evidence (optional)
+        Photo Evidence
       </span>
 
       {/* Hidden file inputs */}
